@@ -1,0 +1,64 @@
+@nikhy_ridecycle_HostAddress = https://localhost:7275
+
+### 1. Create a New Ride (Day 1)
+POST {{nikhy_ridecycle_HostAddress}}/api/rides
+Content-Type: application/json
+
+{
+  "bookingId": 2001,
+  "passengerId": 501,
+  "pickupLocation": "Connaught Place, New Delhi",
+  "destinationLocation": "IGI Airport Terminal 3, New Delhi",
+  "pickupLatitude": 28.6315,
+  "pickupLongitude": 77.2167,
+  "destinationLatitude": 28.5562,
+  "destinationLongitude": 77.1000,
+  "fare": 480.00,
+  "distance": 16.5,
+  "estimatedDuration": 38
+}
+
+### 2. Get Ride Details by ID
+GET {{nikhy_ridecycle_HostAddress}}/api/rides/1
+Accept: application/json
+
+### 3. Accept Ride (Driver Assignment - Day 2)
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/2/accept?driverId=301
+Accept: application/json
+
+### 4. Driver is Arriving (Status Update)
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/3/arriving
+Accept: application/json
+
+### 5. Driver Arrived at Pickup
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/4/arrived
+Accept: application/json
+
+### 6. Start Ride (Day 3)
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/5/start
+Accept: application/json
+
+### 7. Complete Ride
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/6/complete
+Accept: application/json
+
+### 8. Cancel Ride
+POST {{nikhy_ridecycle_HostAddress}}/api/rides/1/cancel
+Content-Type: application/json
+
+{
+  "reason": "Customer requested cancellation - change of plans",
+  "cancelledBy": "Passenger"
+}
+
+### 9. Get Ride History (Paginated & Filterable)
+GET {{nikhy_ridecycle_HostAddress}}/api/rides/history?page=1&pageSize=10
+Accept: application/json
+
+### 10. Filter Ride History by Passenger
+GET {{nikhy_ridecycle_HostAddress}}/api/rides/history?passengerId=101&page=1&pageSize=10
+Accept: application/json
+
+### 11. Filter Ride History by Status
+GET {{nikhy_ridecycle_HostAddress}}/api/rides/history?status=COMPLETED&page=1&pageSize=10
+Accept: application/json
