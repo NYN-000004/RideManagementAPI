@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="nikhy_ridecycle/nikhy_ridecycle.csproj" />
+  <Project Path="nikhy_ridecycle.Tests/nikhy_ridecycle.Tests.csproj" />
+</Solution>
