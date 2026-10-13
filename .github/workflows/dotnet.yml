@@ -1,0 +1,26 @@
+name: .NET API CI
+
+on:
+  push:
+    branches: [ "integrate-deepika" ]
+  pull_request:
+    branches: [ "integrate-deepika" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore RideManagementAPI/RideManagementAPI.csproj
+
+      - name: Build project
+        run: dotnet build RideManagementAPI/RideManagementAPI.csproj --no-restore
