@@ -5,11 +5,10 @@ public class Ride
     public int Id { get; set; }
 
     [Required]
-    public string PickupLocation { get; set; }
+    public string PickupLocation { get; set; } = string.Empty;
 
     [Required]
-    public string DropLocation { get; set; }
-
+    public string DropLocation { get; set; } = string.Empty;
     [Required]
     public DateTime RideTime { get; set; }
 
