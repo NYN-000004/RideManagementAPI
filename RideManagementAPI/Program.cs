@@ -24,6 +24,19 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddControllers();
 
 // ==========================================
+// CORS (For Admin Dashboard Web Client)
+// ==========================================
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+// ==========================================
 // SWAGGER
 // ==========================================
 
@@ -136,6 +149,11 @@ if (app.Environment.IsDevelopment())
 // ==========================================
 // MIDDLEWARE
 // ==========================================
+
+app.UseCors("AllowAll");
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

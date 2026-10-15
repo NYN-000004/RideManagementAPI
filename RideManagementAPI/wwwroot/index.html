@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIKHY — Ride Management Admin Dashboard</title>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for Live Data Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <!-- Dashboard Stylesheet -->
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body data-theme="dark">
+
+<div class="app-container">
+    <!-- ============================================================
+         SIDEBAR NAVIGATION
+         ============================================================ -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-badge">
+                <i class="fas fa-taxi"></i>
+            </div>
+            <div>
+                <div class="logo-text">NIKHY DRIVE</div>
+                <div class="logo-tag">Admin Console</div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-title">Core Operations</div>
+            <button class="nav-link active" data-target="overview">
+                <i class="fas fa-chart-pie"></i>
+                <span>Overview</span>
+            </button>
+            <button class="nav-link" data-target="rides">
+                <i class="fas fa-route"></i>
+                <span>Ride Monitoring</span>
+            </button>
+            <button class="nav-link" data-target="customers">
+                <i class="fas fa-users"></i>
+                <span>Customer Management</span>
+            </button>
+            <button class="nav-link" data-target="riders">
+                <i class="fas fa-id-badge"></i>
+                <span>Rider Management</span>
+            </button>
+            <button class="nav-link" data-target="documents">
+                <i class="fas fa-file-signature"></i>
+                <span>Document Approval</span>
+            </button>
+
+            <div class="nav-section-title">Finance & Rules</div>
+            <button class="nav-link" data-target="pricing">
+                <i class="fas fa-tags"></i>
+                <span>Pricing & Surge</span>
+            </button>
+            <button class="nav-link" data-target="payments">
+                <i class="fas fa-credit-card"></i>
+                <span>Payment Monitoring</span>
+            </button>
+
+            <div class="nav-section-title">Analytics & Governance</div>
+            <button class="nav-link" data-target="reports">
+                <i class="fas fa-file-invoice"></i>
+                <span>Reports & Metrics</span>
+            </button>
+            <button class="nav-link" data-target="audit">
+                <i class="fas fa-star-half-alt"></i>
+                <span>Ratings & Audit Logs</span>
+            </button>
+            <button class="nav-link" data-target="settings">
+                <i class="fas fa-sliders-h"></i>
+                <span>Platform Settings</span>
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div id="backendStatusPill" class="backend-pill">
+                <span class="status-dot online"></span> Checking API...
+            </div>
+            <span id="apiUrlDisplay" style="display:none;"></span>
+            <button class="btn btn-secondary btn-icon" id="serverConfigBtn" title="Backend Server Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ============================================================
+         MAIN CONTENT CONTAINER
+         ============================================================ -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="mobile-toggle-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title" id="pageTitle">Overview</h1>
+            </div>
+
+            <div class="header-right">
+                <button class="header-btn" id="demoModeToggle" title="Toggle Demo Data Mode">
+                    <i class="fas fa-toggle-off"></i> Live Mode
+                </button>
+                <button class="header-btn" id="refreshBtn" title="Refresh Live Data">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+                <button class="header-btn" id="themeToggleBtn" title="Toggle Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="user-profile" id="userProfileBtn" style="cursor:pointer;" title="Admin Profile & Session (Click to Log In / Re-authenticate)">
+                    <div class="avatar">A</div>
+                    <span style="font-size:0.85rem;font-weight:600;">Super Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Page Body -->
+        <div class="page-body">
+
+            <!-- ==========================================
+                 1. OVERVIEW SECTION
+                 ========================================== -->
+            <section id="section-overview" class="dashboard-section active">
+                <!-- KPI Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span>Total Rides</span>
+                            <i class="fas fa-route stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statTotalRides">0</div>
+                        <div class="stat-footer">
+                            <span>All-time platform rides</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span>Active Rides</span>
+                            <i class="fas fa-car-side stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statActiveRides">0</div>
+                        <div class="stat-footer">
+                            <span class="stat-trend up"><i class="fas fa-arrow-up"></i> Live</span>
+                            <span>Currently on trips</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <span>Online Drivers</span>
+                            <i class="fas fa-user-check stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statOnlineRiders">0</div>
+                        <div class="stat-footer">
+                            <span>Approved & ready for dispatch</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card warning">
+                        <div class="stat-header">
+                            <span>Pending Approvals</span>
+                            <i class="fas fa-user-clock stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statPendingApprovals">0</div>
+                        <div class="stat-footer">
+                            <span>Requires verification</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card accent">
+                        <div class="stat-header">
+                            <span>Revenue Today</span>
+                            <i class="fas fa-rupee-sign stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statRevenueToday">₹0</div>
+                        <div class="stat-footer">
+                            <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +14%</span>
+                            <span>vs yesterday</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span>Total Customers</span>
+                            <i class="fas fa-user-friends stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statCustomers">0</div>
+                        <div class="stat-footer">
+                            <span>Total registered users</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <span>Average Rating</span>
+                            <i class="fas fa-star stat-icon"></i>
+                        </div>
+                        <div class="stat-value" id="statAvgRating">5.0 ★</div>
+                        <div class="stat-footer">
+                            <span>Customer feedback score</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div style="display:grid;grid-template-columns:2fr 1fr;gap:1.25rem;">
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-chart-area"></i> Revenue & Trip Volume Velocity</span>
+                        </div>
+                        <div class="card-panel-body" style="height:280px;">
+                            <canvas id="overviewTrendChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-chart-pie"></i> Ride Status Breakdown</span>
+                        </div>
+                        <div class="card-panel-body" style="height:280px;">
+                            <canvas id="overviewDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Administrative Audit Activity -->
+                <div class="card-panel">
+                    <div class="card-panel-header">
+                        <span class="card-title"><i class="fas fa-history"></i> Recent Platform Audit Trails</span>
+                        <button class="btn btn-secondary btn-sm" onclick="app.navigateTo('audit')">View All Logs</button>
+                    </div>
+                    <div class="card-panel-body" id="recentActivityFeed" style="padding:0.75rem 1.25rem;">
+                        <!-- Filled by app.js -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 2. CUSTOMER MANAGEMENT
+                 ========================================== -->
+            <section id="section-customers" class="dashboard-section">
+                <div class="card-panel">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" id="customerSearchInput" placeholder="Search by name, email, phone..." oninput="app.filterAndDisplayCustomers()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="customerStatusFilter" onchange="app.filterAndDisplayCustomers()">
+                                <option value="all">All Statuses</option>
+                                <option value="active">Active Only</option>
+                                <option value="inactive">Inactive Only</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="app.openAddCustomerModal()">
+                                <i class="fas fa-user-plus"></i> Add Customer
+                            </button>
+                            <button class="btn btn-secondary" onclick="app.exportDataToCSV()">
+                                <i class="fas fa-file-export"></i> Export CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Phone Number</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 3. RIDER MANAGEMENT & APPROVALS
+                 ========================================== -->
+            <section id="section-riders" class="dashboard-section">
+                <div class="card-panel">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" id="riderSearchInput" placeholder="Search rider, vehicle, license..." oninput="app.filterAndDisplayRiders()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="riderStatusFilter" onchange="app.filterAndDisplayRiders()">
+                                <option value="all">All Approvals</option>
+                                <option value="Pending">Pending Approvals</option>
+                                <option value="Approved">Approved Riders</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="app.openAddRiderModal()">
+                                <i class="fas fa-plus-circle"></i> Register Rider
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rider ID</th>
+                                    <th>Driver Details</th>
+                                    <th>Vehicle Plate</th>
+                                    <th>License Number</th>
+                                    <th>Approval Status</th>
+                                    <th>Account Status</th>
+                                    <th>Management Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ridersTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 4. DOCUMENT APPROVAL QUEUE
+                 ========================================== -->
+            <section id="section-documents" class="dashboard-section">
+                <div class="card-panel" style="padding:1rem 1.25rem;">
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <div>
+                            <h2 style="font-size:1.1rem;font-weight:700;">Document Verification Workqueue</h2>
+                            <p style="font-size:0.85rem;color:var(--text-secondary);">Verify official Driving Licenses and Vehicle Registration certificates before clearing riders for public dispatch.</p>
+                        </div>
+                        <button class="btn btn-secondary" onclick="app.renderDocuments()">
+                            <i class="fas fa-sync-alt"></i> Re-check Queue
+                        </button>
+                    </div>
+                </div>
+
+                <div id="documentQueueGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1.25rem;">
+                    <!-- Cards populated by app.js -->
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 5. RIDE MONITORING
+                 ========================================== -->
+            <section id="section-rides" class="dashboard-section">
+                <div class="card-panel">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" id="rideSearchInput" placeholder="Filter by location, ride ID..." oninput="app.filterAndDisplayRides()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="rideStatusFilter" onchange="app.filterAndDisplayRides()">
+                                <option value="all">All Rides</option>
+                                <option value="0">Scheduled</option>
+                                <option value="1">In Progress</option>
+                                <option value="2">Completed</option>
+                                <option value="3">Cancelled</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="app.openCreateRideModal()">
+                                <i class="fas fa-calendar-plus"></i> Create Ride
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Ride ID</th>
+                                    <th>Route (Pickup & Drop)</th>
+                                    <th>Scheduled Time</th>
+                                    <th>Seats</th>
+                                    <th>Fare Amount</th>
+                                    <th>Current Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ridesTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 6. PRICING & SURGE CONFIGURATION
+                 ========================================== -->
+            <section id="section-pricing" class="dashboard-section">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+                    <!-- Base Pricing Module -->
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-calculator"></i> Base Pricing Algorithm Rules</span>
+                        </div>
+                        <div class="card-panel-body" style="display:flex;flex-direction:column;gap:1rem;">
+                            <input type="hidden" id="pricingRuleId">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Base Fare (₹)</label>
+                                    <input type="number" class="form-control" id="pricingBaseFare" value="50">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Per Km Rate (₹/km)</label>
+                                    <input type="number" class="form-control" id="pricingPerKmFare" value="14.50" step="0.5">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Time Fare (₹/min)</label>
+                                    <input type="number" class="form-control" id="pricingTimeFare" value="1.50" step="0.25">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Minimum Fare Floor (₹)</label>
+                                    <input type="number" class="form-control" id="pricingMinimumFare" value="70">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Platform Service Fee (₹)</label>
+                                <input type="number" class="form-control" id="pricingPlatformFee" value="15">
+                            </div>
+                            <button class="btn btn-primary" style="margin-top:0.5rem;" onclick="app.saveBasePricing()">
+                                <i class="fas fa-save"></i> Save Fare Rule Matrix
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Surge Multiplier Zones -->
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-bolt"></i> Geographic Surge Multipliers</span>
+                            <button class="btn btn-primary btn-sm" onclick="app.openAddSurgeModal()">
+                                <i class="fas fa-plus"></i> Add Surge Zone
+                            </button>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Zone ID</th>
+                                        <th>Area Name</th>
+                                        <th>Multiplier</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="surgeTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 7. PLATFORM SETTINGS
+                 ========================================== -->
+            <section id="section-settings" class="dashboard-section">
+                <div class="card-panel">
+                    <div class="card-panel-header">
+                        <span class="card-title"><i class="fas fa-cogs"></i> System & Platform Configuration Parameters</span>
+                        <button class="btn btn-primary btn-sm" onclick="app.openAddSettingModal()">
+                            <i class="fas fa-plus"></i> New Parameter
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Setting ID</th>
+                                    <th>Parameter Key</th>
+                                    <th>Assigned Value</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settingsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 8. PAYMENT MONITORING
+                 ========================================== -->
+            <section id="section-payments" class="dashboard-section">
+                <div class="card-panel">
+                    <div class="table-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" class="search-input" id="paymentSearchInput" placeholder="Search by Txn ID, Ride ID..." oninput="app.filterAndDisplayPayments()">
+                        </div>
+                        <div class="filter-group">
+                            <select class="filter-select" id="paymentStatusFilter" onchange="app.filterAndDisplayPayments()">
+                                <option value="all">All Payment Statuses</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Failed">Failed</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="app.openRecordPaymentModal()">
+                                <i class="fas fa-receipt"></i> Record Transaction
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Trip Link</th>
+                                    <th>Amount</th>
+                                    <th>Payment Method</th>
+                                    <th>Transaction Hash</th>
+                                    <th>Status</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paymentsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 9. REPORTS & OPERATIONAL DATA
+                 ========================================== -->
+            <section id="section-reports" class="dashboard-section">
+                <!-- Operational Telemetry Cards -->
+                <div style="margin-bottom:0.5rem;">
+                    <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:0.75rem;">Live Operational Telemetry & System Latency</h2>
+                    <div class="stats-grid" id="operationalMetricsGrid">
+                        <!-- Populated by app.js -->
+                    </div>
+                </div>
+
+                <!-- Reports Table -->
+                <div class="card-panel">
+                    <div class="card-panel-header">
+                        <span class="card-title"><i class="fas fa-file-alt"></i> Generated Platform & Financial Reports</span>
+                        <button class="btn btn-primary btn-sm" onclick="app.openCreateReportModal()">
+                            <i class="fas fa-plus"></i> Generate Report
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Report ID</th>
+                                    <th>Report Type</th>
+                                    <th>Description</th>
+                                    <th>Payload Snapshot</th>
+                                    <th>Generated At</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 10. RATINGS, FEEDBACK & AUDIT LOGS
+                 ========================================== -->
+            <section id="section-audit" class="dashboard-section">
+                <div style="display:flex;flex-direction:column;gap:1.5rem;">
+                    <!-- Ratings Section -->
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-star"></i> Customer Reviews & Driver Ratings</span>
+                            <button class="btn btn-primary btn-sm" onclick="app.openCreateRatingModal()">
+                                <i class="fas fa-plus"></i> Log Feedback
+                            </button>
+                        </div>
+                        <div class="card-panel-body">
+                            <div id="ratingsGrid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1rem;">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security & Audit Trails -->
+                    <div class="card-panel">
+                        <div class="card-panel-header">
+                            <span class="card-title"><i class="fas fa-shield-alt"></i> Administrative Action Audit Log</span>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Log ID</th>
+                                        <th>Action Taken</th>
+                                        <th>Target Entity</th>
+                                        <th>Operator</th>
+                                        <th>Description</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auditTableBody">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- ============================================================
+     INTERACTIVE MODALS
+     ============================================================ -->
+
+<!-- Customer Modal -->
+<div class="modal-overlay" id="customerModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="customerModalTitle">Customer Details</h3>
+            <button class="modal-close" onclick="app.closeModal('customerModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="customerId">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="customerName" placeholder="e.g. John Doe">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" class="form-control" id="customerEmail" placeholder="e.g. john@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="customerPhone" placeholder="e.g. +91 9876543210">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.5rem;">
+                <input type="checkbox" id="customerIsActive" checked>
+                <label for="customerIsActive" class="form-label" style="cursor:pointer;margin:0;">Account Active</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('customerModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveCustomer()">Save Customer</button>
+        </div>
+    </div>
+</div>
+
+<!-- Rider Modal -->
+<div class="modal-overlay" id="riderModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="riderModalTitle">Rider Details</h3>
+            <button class="modal-close" onclick="app.closeModal('riderModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="riderId">
+            <div class="form-group">
+                <label class="form-label">Driver Name</label>
+                <input type="text" class="form-control" id="riderName" placeholder="e.g. Rajesh Kumar">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" id="riderEmail" placeholder="e.g. driver@example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone</label>
+                    <input type="tel" class="form-control" id="riderPhone" placeholder="e.g. 9876543210">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Vehicle Registration</label>
+                    <input type="text" class="form-control" id="riderVehicleNumber" placeholder="e.g. AP37AB1234">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">License Number</label>
+                    <input type="text" class="form-control" id="riderLicenseNumber" placeholder="e.g. DL9876543210">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Approval Status</label>
+                    <select class="form-control" id="riderApprovalStatus">
+                        <option value="Pending">Pending</option>
+                        <option value="Approved">Approved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="form-group" style="justify-content:center;">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-top:1.5rem;">
+                        <input type="checkbox" id="riderIsActive" checked>
+                        <label for="riderIsActive" class="form-label" style="cursor:pointer;margin:0;">Active Status</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('riderModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveRider()">Save Rider</button>
+        </div>
+    </div>
+</div>
+
+<!-- Ride Modal -->
+<div class="modal-overlay" id="rideModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="rideModalTitle">Ride Scheduling</h3>
+            <button class="modal-close" onclick="app.closeModal('rideModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="rideId">
+            <div class="form-group">
+                <label class="form-label">Pickup Location</label>
+                <input type="text" class="form-control" id="ridePickup" placeholder="e.g. Bhimavaram Railway Station">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Drop Location</label>
+                <input type="text" class="form-control" id="rideDrop" placeholder="e.g. SRKR Engineering College">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Ride Time</label>
+                    <input type="datetime-local" class="form-control" id="rideTime">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Available Seats</label>
+                    <input type="number" class="form-control" id="rideSeats" value="4" min="1" max="10">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Fare Price (₹)</label>
+                    <input type="number" class="form-control" id="ridePrice" value="150" min="1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Ride Status</label>
+                    <select class="form-control" id="rideStatus">
+                        <option value="0">Scheduled</option>
+                        <option value="1">In Progress</option>
+                        <option value="2">Completed</option>
+                        <option value="3">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('rideModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveRide()">Save Ride</button>
+        </div>
+    </div>
+</div>
+
+<!-- Surge Modal -->
+<div class="modal-overlay" id="surgeModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="surgeModalTitle">Configure Surge Multiplier</h3>
+            <button class="modal-close" onclick="app.closeModal('surgeModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="surgeId">
+            <div class="form-group">
+                <label class="form-label">Geographic Zone / Area Name</label>
+                <input type="text" class="form-control" id="surgeArea" placeholder="e.g. Railway Station Hub">
+            </div>
+            <div class="form-group">
+                <div style="display:flex;justify-content:space-between;">
+                    <label class="form-label">Surge Multiplier</label>
+                    <span id="surgeMultiplierVal" style="font-weight:700;color:var(--status-warning);">1.5x</span>
+                </div>
+                <input type="range" class="form-control" id="surgeMultiplier" min="1.0" max="4.0" step="0.1" value="1.5" oninput="document.getElementById('surgeMultiplierVal').textContent = this.value + 'x'">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <input type="checkbox" id="surgeIsActive" checked>
+                <label for="surgeIsActive" class="form-label" style="cursor:pointer;margin:0;">Zone Active</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('surgeModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveSurge()">Save Surge Area</button>
+        </div>
+    </div>
+</div>
+
+<!-- Setting Modal -->
+<div class="modal-overlay" id="settingModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title" id="settingModalTitle">Platform Setting</h3>
+            <button class="modal-close" onclick="app.closeModal('settingModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="settingId">
+            <div class="form-group">
+                <label class="form-label">Configuration Key</label>
+                <input type="text" class="form-control" id="settingKey" placeholder="e.g. MaxSearchTimeout">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Value</label>
+                <input type="text" class="form-control" id="settingValue" placeholder="e.g. 120">
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;">
+                <input type="checkbox" id="settingIsActive" checked>
+                <label for="settingIsActive" class="form-label" style="cursor:pointer;margin:0;">Setting Active</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('settingModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveSetting()">Save Setting</button>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Record Payment Transaction</h3>
+            <button class="modal-close" onclick="app.closeModal('paymentModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Associated Ride ID</label>
+                    <input type="number" class="form-control" id="paymentRideId" placeholder="e.g. 201">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Amount (₹)</label>
+                    <input type="number" class="form-control" id="paymentAmount" placeholder="e.g. 180.00" step="0.5">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Payment Method</label>
+                    <select class="form-control" id="paymentMethod">
+                        <option value="UPI / GooglePay">UPI / GooglePay</option>
+                        <option value="Credit/Debit Card">Credit/Debit Card</option>
+                        <option value="Wallet Balance">Wallet Balance</option>
+                        <option value="Cash">Cash</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Status</label>
+                    <select class="form-control" id="paymentStatus">
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Transaction ID / Reference</label>
+                <input type="text" class="form-control" id="paymentTxnId" placeholder="e.g. TXN_UPI_990123">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('paymentModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.savePayment()">Record Payment</button>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal-overlay" id="reportModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Generate Platform Report</h3>
+            <button class="modal-close" onclick="app.closeModal('reportModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Report Category / Type</label>
+                <input type="text" class="form-control" id="reportType" value="Daily Operational Summary">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Description & Objectives</label>
+                <textarea class="form-control" id="reportDescription" rows="3">Aggregated performance and revenue summary for operational analytics.</textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('reportModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveReport()">Generate & Save</button>
+        </div>
+    </div>
+</div>
+
+<!-- Rating Modal -->
+<div class="modal-overlay" id="ratingModal">
+    <div class="modal-dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">Submit Customer Rating & Feedback</h3>
+            <button class="modal-close" onclick="app.closeModal('ratingModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Ride ID</label>
+                    <input type="number" class="form-control" id="ratingRideId" placeholder="e.g. 201">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rider ID</label>
+                    <input type="number" class="form-control" id="ratingRiderId" placeholder="e.g. 1">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Rating Value (1 to 5 Stars)</label>
+                <select class="form-control" id="ratingValue">
+                    <option value="5">★★★★★ (5 Stars)</option>
+                    <option value="4">★★★★☆ (4 Stars)</option>
+                    <option value="3">★★★☆☆ (3 Stars)</option>
+                    <option value="2">★★☆☆☆ (2 Stars)</option>
+                    <option value="1">★☆☆☆☆ (1 Star)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Feedback Review</label>
+                <textarea class="form-control" id="ratingFeedback" rows="3" placeholder="Enter customer feedback comment..."></textarea>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('ratingModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="app.saveRating()">Submit Feedback</button>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="loginModal">
+    <div class="modal-dialog" style="max-width: 440px;">
+        <div class="modal-header">
+            <h3 class="modal-title"><i class="fas fa-lock"></i> Admin Authentication</h3>
+            <button class="modal-close" onclick="app.closeModal('loginModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                Authenticate with your ASP.NET Core JWT credentials to access live management APIs.
+            </p>
+            <div id="loginAlertBox" style="display:none; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem;"></div>
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" id="loginUsername" value="admin" placeholder="Enter username (e.g. admin)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" class="form-control" id="loginPassword" value="1234" placeholder="Enter password (e.g. 1234)">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="app.closeModal('loginModal')">Cancel</button>
+            <button class="btn btn-primary" id="loginSubmitBtn"><i class="fas fa-sign-in-alt"></i> Log In</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="js/mock-data.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

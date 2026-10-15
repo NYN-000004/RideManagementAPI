@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\nikhy_ridecycle\nikhy_ridecycle.csproj" />
+    <ProjectReference Include="..\RideManagementAPI\RideManagementAPI.csproj" />
   </ItemGroup>
 
 </Project>
