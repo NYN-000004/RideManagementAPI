@@ -357,8 +357,8 @@ class AdminApp {
                     datasets: [{
                         label: 'Gross GMV (₹)',
                         data: [54000, 62000, 58000, 71000, 69000, 89000, metrics.revenueToday || 84520],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: '#d4af37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.14)',
                         fill: true,
                         tension: 0.4
                     }, {
@@ -392,7 +392,7 @@ class AdminApp {
                     labels: ['Completed', 'Ongoing', 'Scheduled', 'Cancelled'],
                     datasets: [{
                         data: [72, metrics.activeRides || 8, 12, 8],
-                        backgroundColor: ['#10b981', '#3b82f6', '#f59e0b', '#ef4444'],
+                        backgroundColor: ['#10b981', '#d4af37', '#f59e0b', '#ef4444'],
                         borderWidth: 0
                     }]
                 },

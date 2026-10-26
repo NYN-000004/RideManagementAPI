@@ -4,38 +4,41 @@
    ============================================================ */
 
 :root {
-    --bg-base: #0f172a;
-    --bg-surface: #1e293b;
-    --bg-surface-elevated: #334155;
-    --bg-surface-hover: #293548;
+    --bg-base: #0a0a0d;
+    --bg-surface: #141419;
+    --bg-surface-elevated: #1e1e26;
+    --bg-surface-hover: #252530;
     
-    --border-subtle: #334155;
-    --border-strong: #475569;
+    --border-subtle: rgba(212, 175, 55, 0.18);
+    --border-strong: rgba(212, 175, 55, 0.4);
     
-    --text-primary: #f8fafc;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
+    --text-primary: #fcfbf7;
+    --text-secondary: #c9c1b0;
+    --text-muted: #857b68;
     
-    --brand-primary: #3b82f6;
-    --brand-primary-hover: #2563eb;
-    --brand-accent: #06b6d4;
+    --brand-primary: #d4af37;
+    --brand-primary-hover: #f3c64f;
+    --brand-accent: #f59e0b;
+    --brand-contrast-text: #0a0a0d;
+    --brand-glow: rgba(212, 175, 55, 0.35);
+    --brand-primary-light: rgba(212, 175, 55, 0.14);
     
     --status-success: #10b981;
-    --status-success-bg: rgba(16, 185, 129, 0.12);
-    --status-warning: #f59e0b;
-    --status-warning-bg: rgba(245, 158, 11, 0.12);
+    --status-success-bg: rgba(16, 185, 129, 0.14);
+    --status-warning: #eab308;
+    --status-warning-bg: rgba(234, 179, 8, 0.14);
     --status-danger: #ef4444;
-    --status-danger-bg: rgba(239, 68, 68, 0.12);
-    --status-info: #0ea5e9;
-    --status-info-bg: rgba(14, 165, 233, 0.12);
+    --status-danger-bg: rgba(239, 68, 68, 0.14);
+    --status-info: #d4af37;
+    --status-info-bg: rgba(212, 175, 55, 0.14);
 
     --sidebar-width: 260px;
     --header-height: 64px;
     --radius-sm: 6px;
     --radius-md: 10px;
     --radius-lg: 14px;
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-    --shadow-dropdown: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+    --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(212, 175, 55, 0.12);
+    --shadow-dropdown: 0 12px 24px -4px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(212, 175, 55, 0.25);
     
     --transition-fast: 0.15s ease;
     --transition-normal: 0.25s ease;
@@ -120,15 +123,15 @@ body {
 .logo-badge {
     width: 36px;
     height: 36px;
-    background: linear-gradient(135deg, var(--brand-primary), var(--brand-accent));
+    background: linear-gradient(135deg, var(--brand-primary), #b38f28);
     border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--brand-contrast-text);
     font-weight: 800;
     font-size: 1.1rem;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+    box-shadow: 0 2px 10px var(--brand-glow);
 }
 
 .logo-text {
@@ -142,8 +145,9 @@ body {
     font-size: 0.65rem;
     font-weight: 600;
     padding: 2px 6px;
-    background-color: rgba(59, 130, 246, 0.15);
+    background-color: var(--brand-primary-light);
     color: var(--brand-primary);
+    border: 1px solid var(--border-subtle);
     border-radius: 999px;
     text-transform: uppercase;
 }
@@ -190,10 +194,10 @@ body {
 }
 
 .nav-link.active {
-    background-color: var(--brand-primary);
-    color: #ffffff;
-    font-weight: 600;
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    background: linear-gradient(135deg, var(--brand-primary), #c9a02e);
+    color: var(--brand-contrast-text);
+    font-weight: 700;
+    box-shadow: 0 2px 12px var(--brand-glow);
 }
 
 .nav-link i {
@@ -644,11 +648,14 @@ body {
 }
 
 .btn-primary {
-    background-color: var(--brand-primary);
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--brand-primary), #b89128);
+    color: var(--brand-contrast-text);
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--brand-glow);
 }
 .btn-primary:hover {
-    background-color: var(--brand-primary-hover);
+    background: linear-gradient(135deg, var(--brand-primary-hover), var(--brand-primary));
+    color: var(--brand-contrast-text);
 }
 
 .btn-success {

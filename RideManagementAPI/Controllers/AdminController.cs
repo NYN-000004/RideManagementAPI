@@ -11,8 +11,15 @@ namespace RideManagementAPI.Controllers
     public class AdminController : ControllerBase
     {
         // SAME KEY USED IN Program.cs
-        private const string JwtKey =
-            "ThisIsMySuperSecretKeyForJWTAuthentication1234567890";
+        private readonly string _jwtKey;
+
+        public AdminController(IConfiguration configuration)
+        {
+            _jwtKey = configuration["Jwt:Key"]
+                ?? throw new InvalidOperationException("JWT key is not configured");
+        }
+
+        
 
         private const string JwtIssuer = "RideApp";
         private const string JwtAudience = "RideUsers";
@@ -32,7 +39,7 @@ namespace RideManagementAPI.Controllers
 
             // Security key
             var securityKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(JwtKey)
+                Encoding.UTF8.GetBytes(_jwtKey)
             );
 
             var credentials = new SigningCredentials(

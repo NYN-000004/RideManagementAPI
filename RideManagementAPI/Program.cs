@@ -77,11 +77,10 @@ builder.Services.AddSwaggerGen(options =>
 // IMPORTANT:
 // This is EXACTLY the same key used in AdminController.cs
 
-const string jwtKey =
-    "ThisIsMySuperSecretKeyForJWTAuthentication1234567890";
+string jwtKey = builder.Configuration["Jwt:Key"]
+    ?? throw new InvalidOperationException("JWT key is not configured");
 
 const string jwtIssuer = "RideApp";
-
 const string jwtAudience = "RideUsers";
 
 var key = Encoding.UTF8.GetBytes(jwtKey);
